@@ -1,6 +1,6 @@
 // import Native.Scheduler //
 
-var _igor_drozdov$device_orientation$Native_DeviceOrientation = function() {
+var _igor_drozdov$elm_device_orientation$Native_DeviceOrientation = function() {
 
     function isSupported() {
         return typeof window.DeviceOrientationEvent === 'function'
