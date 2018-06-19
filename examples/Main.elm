@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import Html exposing (Html, text, div, img)
-import Html.Attributes exposing (src)
+import Html.Attributes exposing (id, class, style)
 import DeviceOrientation exposing (Orientation, onDeviceOrientation)
 import Time exposing (every, second, Time)
 
@@ -43,7 +43,31 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    div [] [ div [] [ text "Your Elm App is working!" ] ]
+    let
+        transform model =
+            [ ( "transform", "rotateX(" ++ (toString model.beta) ++ "deg) " ++ "rotateY(" ++ (toString model.gamma) ++ "deg) " ++ "rotateZ(" ++ (toString model.alpha) ++ "deg)" ) ]
+    in
+        div []
+            [ div [ class "cube", style (transform model) ]
+                [ div [ class "side one" ]
+                    [ text "1" ]
+                , div
+                    [ class "side two" ]
+                    [ text "2" ]
+                , div
+                    [ class "side three" ]
+                    [ text "3" ]
+                , div
+                    [ class "side four" ]
+                    [ text "4" ]
+                , div
+                    [ class "side five" ]
+                    [ text "5" ]
+                , div
+                    [ class "side six" ]
+                    [ text "6" ]
+                ]
+            ]
 
 
 
