@@ -88,7 +88,6 @@ main =
 ---- SUBSCRIPTION ----
 
 
+subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.batch
-        [ onDeviceOrientation DeviceOrientationChanged
-        ]
+    onDeviceOrientation DeviceOrientationChanged
