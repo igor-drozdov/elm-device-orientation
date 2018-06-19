@@ -2,19 +2,24 @@ module Main exposing (..)
 
 import Html exposing (Html, text, div, img)
 import Html.Attributes exposing (src)
-import 
+import DeviceOrientation exposing (Orientation, onDeviceOrientation)
+import Time exposing (every, second, Time)
 
 
 ---- MODEL ----
 
 
 type alias Model =
-    {}
+    Orientation
+
+
+initialModel =
+    Orientation 0 0 0 True
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( {}, Cmd.none )
+    ( initialModel, Cmd.none )
 
 
 
@@ -22,12 +27,14 @@ init =
 
 
 type Msg
-    = NoOp
+    = DeviceOrientationChanged Orientation
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model, Cmd.none )
+    case msg of
+        DeviceOrientationChanged orientation ->
+            ( orientation, Cmd.none )
 
 
 
@@ -36,10 +43,7 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ img [ src "/logo.svg" ] []
-        , div [] [ text "Your Elm App is working!" ]
-        ]
+    div [] [ div [] [ text "Your Elm App is working!" ] ]
 
 
 
@@ -52,5 +56,15 @@ main =
         { view = view
         , init = init
         , update = update
-        , subscriptions = always Sub.none
+        , subscriptions = subscriptions
         }
+
+
+
+---- SUBSCRIPTION ----
+
+
+subscriptions model =
+    Sub.batch
+        [ onDeviceOrientation DeviceOrientationChanged
+        ]

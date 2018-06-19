@@ -9,8 +9,8 @@ var _igor_drozdov$device_orientation$Native_DeviceOrientation = function() {
     function toOrientationProperties(target) {
         return {
             alpha: target.alpha,
-            beta: target.alpha,
-            gamma: target.alpha,
+            beta: target.beta,
+            gamma: target.gamma,
             absolute: target.absolute
         }
     }
@@ -19,28 +19,23 @@ var _igor_drozdov$device_orientation$Native_DeviceOrientation = function() {
         return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback) {
 
             function performTask(event) {
-                _elm_lang$core$Native_Scheduler.rawSpawn(toTask(toOrientationProperties(event.target)));
+                _elm_lang$core$Native_Scheduler.rawSpawn(toTask(toOrientationProperties(event)));
             }
 
-            document.addEventListener(eventName, performTask);
+            window.addEventListener(eventName, performTask);
 
             return function() {
-                document.removeEventListener(eventName, performTask);
+                window.removeEventListener(eventName, performTask);
             };
         });
     }
 
     function onDeviceOrientation(toTask) {
-        return onEvent("ondeviceorientation", toTask);
-    }
-
-    function onDeviceMotion(toTask) {
-        return onEvent("ondevicemotion", toTask);
+        return onEvent("deviceorientation", toTask);
     }
 
     return {
         onDeviceOrientation: onDeviceOrientation,
-        onDeviceMotion: onDeviceMotion,
         isSupported: isSupported
     };
 

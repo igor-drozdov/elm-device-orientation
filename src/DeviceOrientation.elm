@@ -1,11 +1,11 @@
-effect module DeviceOrientation where { subscription = MySub } exposing (isSupported, onDeviceOrientation)
+effect module DeviceOrientation where { subscription = MySub } exposing (isSupported, onDeviceOrientation, Orientation)
 
 {-|
 
 
-# Page Orientation
+# Device Orientation
 
-@docs isSupported, onDeviceOrientation
+@docs isSupported, onDeviceOrientation, Orientation
 
 -}
 
@@ -17,17 +17,17 @@ import Task exposing (Task)
 -- PAGE VISIBILITY
 
 
-{-| Value describing whether the page is hidden or visible.
+{-| Information from the physical orientation of the device running the web page.
 -}
 type alias Orientation =
-    { alpha : Int
-    , beta : Int
-    , gamma : Int
+    { alpha : Float
+    , beta : Float
+    , gamma : Float
     , absolute : Bool
     }
 
 
-{-| Is the page hidden?
+{-| Is the device orientation supported?
 -}
 isSupported : Task x Bool
 isSupported =
@@ -38,8 +38,7 @@ isSupported =
 -- SUBSCRIPTIONS
 
 
-{-| Subscribe to any visibility changes. You will get updates about the current
-visibility.
+{-| Subscribe to changes of device orientation.
 -}
 onDeviceOrientation : (Orientation -> msg) -> Sub msg
 onDeviceOrientation tagger =
