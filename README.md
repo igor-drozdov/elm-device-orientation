@@ -5,7 +5,7 @@ It is based on [Device Orientation API](https://developer.mozilla.org/en-US/docs
 Basically, the usage of the library comes down to adding a subscription:
 
 ```elm
-import DeviceOrientation exposing (Orientation, onDeviceOrientation)
+import DeviceOrientation exposing (Orientation, watch)
 
 ...
 
@@ -23,8 +23,8 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    onDeviceOrientation DeviceOrientationChanged
-    
+    watch DeviceOrientationChanged
+
 ```
 
 Please, feel free to look through the provided example for an extra explanation.

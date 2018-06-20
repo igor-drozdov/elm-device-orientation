@@ -1,8 +1,9 @@
 module Main exposing (..)
 
-import Html exposing (Html, text, div, img)
+import Html exposing (Html, text, div, span)
 import Html.Attributes exposing (id, class, style)
-import DeviceOrientation exposing (Orientation, onDeviceOrientation)
+import DeviceOrientation exposing (Orientation)
+import DeviceMotion exposing (Motion)
 import Time exposing (every, second, Time)
 
 
@@ -10,11 +11,15 @@ import Time exposing (every, second, Time)
 
 
 type alias Model =
-    Orientation
+    { orientation : Orientation
+    , motion : Motion
+    }
 
 
 initialModel =
-    Orientation 0 0 0 True
+    { orientation = Orientation 0 0 0 True
+    , motion = Motion { x = 0, y = 0, z = 0 } { x = 0, y = 0, z = 0 } { alpha = 0, beta = 0, gamma = 0 } 0
+    }
 
 
 init : ( Model, Cmd Msg )
@@ -28,13 +33,17 @@ init =
 
 type Msg
     = DeviceOrientationChanged Orientation
+    | DeviceMotionChanged Motion
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         DeviceOrientationChanged orientation ->
-            ( orientation, Cmd.none )
+            ( { model | orientation = orientation }, Cmd.none )
+
+        DeviceMotionChanged motion ->
+            ( { model | motion = motion }, Cmd.none )
 
 
 
@@ -44,11 +53,46 @@ update msg model =
 view : Model -> Html Msg
 view model =
     let
-        transform model =
-            [ ( "transform", "rotateX(" ++ (toString model.beta) ++ "deg) " ++ "rotateY(" ++ (toString model.gamma) ++ "deg) " ++ "rotateZ(" ++ (toString model.alpha) ++ "deg)" ) ]
+        transform { orientation } =
+            [ ( "transform", "rotateX(" ++ (toString orientation.beta) ++ "deg) " ++ "rotateY(" ++ (toString orientation.gamma) ++ "deg) " ++ "rotateZ(" ++ (toString orientation.alpha) ++ "deg)" ) ]
+
+        motionData { motion } =
+            div []
+                [ div []
+                    [ span [] [ text "Acceleration: " ]
+                    , span []
+                        [ text ("x: " ++ (toString <| round motion.acceleration.x) ++ ", ")
+                        , text ("y: " ++ (toString <| round motion.acceleration.y) ++ ", ")
+                        , text ("z: " ++ (toString <| round motion.acceleration.z))
+                        ]
+                    ]
+                , div
+                    []
+                    [ span [] [ text "Acceleration Incl. Gravity: " ]
+                    , span []
+                        [ text ("x: " ++ (toString <| round motion.accelerationIncludingGravity.x) ++ ", ")
+                        , text ("y: " ++ (toString <| round motion.accelerationIncludingGravity.y) ++ ", ")
+                        , text ("z: " ++ (toString <| round motion.accelerationIncludingGravity.z))
+                        ]
+                    ]
+                , div
+                    []
+                    [ span [] [ text "Rot. Rate: " ]
+                    , span []
+                        [ text ("alpha: " ++ (toString <| round motion.rotationRate.alpha) ++ ", ")
+                        , text ("beta: " ++ (toString <| round motion.rotationRate.beta) ++ ", ")
+                        , text ("gamma: " ++ (toString <| round motion.rotationRate.gamma))
+                        ]
+                    ]
+                , div []
+                    [ span [] [ text "Interval: " ]
+                    , span [] [ text ((toString motion.interval) ++ "ms") ]
+                    ]
+                ]
     in
         div []
-            [ div [ class "cube", style (transform model) ]
+            [ div [] [ motionData model ]
+            , div [ class "cube", style (transform model) ]
                 [ div [ class "side one" ]
                     [ text "1" ]
                 , div
@@ -90,4 +134,7 @@ main =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    onDeviceOrientation DeviceOrientationChanged
+    Sub.batch
+        [ DeviceOrientation.watch DeviceOrientationChanged
+        , DeviceMotion.watch DeviceMotionChanged
+        ]

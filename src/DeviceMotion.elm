@@ -1,11 +1,11 @@
-effect module DeviceOrientation where { subscription = MySub } exposing (watch, Orientation)
+effect module DeviceMotion where { subscription = MySub } exposing (watch, Motion)
 
 {-|
 
 
-# Device Orientation
+# Device Motion
 
-@docs watch, Orientation
+@docs watch, Motion
 
 -}
 
@@ -17,13 +17,13 @@ import Task exposing (Task)
 -- PAGE VISIBILITY
 
 
-{-| Information from the physical orientation of the device running the web page.
+{-| Information from the physical motion of the device running the web page.
 -}
-type alias Orientation =
-    { alpha : Float
-    , beta : Float
-    , gamma : Float
-    , absolute : Bool
+type alias Motion =
+    { acceleration : { x : Float, y : Float, z : Float }
+    , accelerationIncludingGravity : { x : Float, y : Float, z : Float }
+    , rotationRate : { alpha : Float, beta : Float, gamma : Float }
+    , interval : Int
     }
 
 
@@ -31,15 +31,15 @@ type alias Orientation =
 -- SUBSCRIPTIONS
 
 
-{-| Subscribe to changes of device orientation.
+{-| Subscribe to changes of device motion.
 -}
-watch : (Orientation -> msg) -> Sub msg
+watch : (Motion -> msg) -> Sub msg
 watch tagger =
     subscription (Tagger tagger)
 
 
 type MySub msg
-    = Tagger (Orientation -> msg)
+    = Tagger (Motion -> msg)
 
 
 subMap : (a -> b) -> MySub a -> MySub b
@@ -63,14 +63,14 @@ init =
     Task.succeed Nothing
 
 
-onEffects : Platform.Router msg Orientation -> List (MySub msg) -> State msg -> Task Never (State msg)
+onEffects : Platform.Router msg Motion -> List (MySub msg) -> State msg -> Task Never (State msg)
 onEffects router newSubs state =
     case ( state, newSubs ) of
         ( Nothing, [] ) ->
             Task.succeed state
 
         ( Nothing, _ :: _ ) ->
-            Process.spawn (Native.DeviceOrientation.onDeviceOrientation (Platform.sendToSelf router))
+            Process.spawn (Native.DeviceOrientation.onDeviceMotion (Platform.sendToSelf router))
                 |> Task.andThen (\pid -> Task.succeed (Just { subs = newSubs, pid = pid }))
 
         ( Just { pid }, [] ) ->
@@ -81,7 +81,7 @@ onEffects router newSubs state =
             Task.succeed (Just { subs = newSubs, pid = pid })
 
 
-onSelfMsg : Platform.Router msg Orientation -> Orientation -> State msg -> Task Never (State msg)
+onSelfMsg : Platform.Router msg Motion -> Motion -> State msg -> Task Never (State msg)
 onSelfMsg router orientation state =
     case state of
         Nothing ->
