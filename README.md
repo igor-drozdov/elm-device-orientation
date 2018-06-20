@@ -11,19 +11,26 @@ import DeviceOrientation exposing (Orientation, watch)
 
 type Msg
     = DeviceOrientationChanged Orientation
+    | DeviceMotionChanged Motion
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         DeviceOrientationChanged orientation ->
-            ( orientation, Cmd.none )
+            ( model, Cmd.none )
+
+        DeviceMotionChanged motion ->
+            ( model, Cmd.none )
 
 ...
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    watch DeviceOrientationChanged
+    Sub.batch
+        [ DeviceOrientation.watch DeviceOrientationChanged
+        , DeviceMotion.watch DeviceMotionChanged
+        ]
 
 ```
 
