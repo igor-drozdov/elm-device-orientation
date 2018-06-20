@@ -1,5 +1,5 @@
 {
-    "version": "0.0.1",
+    "version": "0.0.2",
     "summary": "An example of usage of elm-device-orientation library",
     "repository": "https://github.com/igor-drozdov/elm-device-orientation.git",
     "license": "BSD3",
